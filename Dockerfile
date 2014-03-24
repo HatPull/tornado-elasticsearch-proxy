@@ -1,4 +1,4 @@
-FROM tomgruner/globallometree-ubuntu-base
+FROM tomgruner/globallometree-base
 
 MAINTAINER Tom Gruner "tom.gruner@gmail.com"
 
