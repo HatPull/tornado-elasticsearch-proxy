@@ -2,7 +2,7 @@
 PROJECT_ROOT = $(shell pwd)
 
 build:
-	docker build -t docker_es_proxy_image github.com/GlobAllomeTree/docker-es-proxy
+	docker build -t docker_es_proxy_image github.com/HatPull/tornado-elasticsearch-proxy
 
 build-local:
 	docker build -t docker_es_proxy_image .

@@ -1,6 +1,6 @@
-FROM tomgruner/globallometree-ubuntu-base
+FROM xela7/hatpull-base
 
-MAINTAINER Tom Gruner "tom.gruner@gmail.com"
+MAINTAINER Alex Tokar "alext@bitbamboo.com"
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV LC_ALL en_US.UTF-8
