@@ -18,7 +18,7 @@ es-proxy-stop:
 ###################################### DEBUG ################################
 
 es-proxy-run-bash: stop clean-bash
-	docker run -i -t -name docker_es_proxy_bash -link ${ELASTIC_CONTAINER_NAME}:ES -p 9225:9225 -v ${PROJECT_ROOT}:/home/docker/code docker_es_proxy_image bash /home/docker/code/server/startup_bash.sh
+	docker run -i -t --name docker_es_proxy_bash --link ${ELASTIC_CONTAINER_NAME}:ES -p 9225:9225 -v ${PROJECT_ROOT}:/home/docker/code docker_es_proxy_image bash /home/docker/code/server/startup_bash.sh
 
 es-proxy-stop-bash:
 	-@docker stop docker_es_proxy_bash 2>/dev/null || true

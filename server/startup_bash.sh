@@ -1,9 +1,9 @@
 #!/bin/bash
 python /home/docker/code/server/save_env.py
 
-LOCAL_SETTINGS_FILE=/home/docker/code/globallometree/settings_local.py
+LOCAL_SETTINGS_FILE=/opt/code/hatpull/settings_local.py
 
-cd /home/docker/code/es_proxy
+cd /opt/code/es_proxy
 
 echo ""
 echo "Elasticsearch Proxy server"
