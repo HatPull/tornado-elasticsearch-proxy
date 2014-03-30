@@ -1,6 +1,6 @@
 import json
 
-with open('/home/docker/env.json') as infile:
+with open('/opt/env.json') as infile:
     env = json.load(infile)
 
 #Permissions is a list of matrices
