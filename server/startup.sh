@@ -1,3 +1,5 @@
 #!/bin/bash
+#Save the environment that was passed in
 python /opt/code/server/save_env.py
-supervisord -n
+#Run the proxy server
+python /opt/code/es_proxy/run_proxy.py

@@ -17,9 +17,6 @@ RUN apt-get install -y libcurl4-gnutls-dev librtmp-dev
 # add from repository root
 ADD . /opt/code/ 
 
-# setup all the configfiles
-RUN ln -s /opt/code/server/supervisor.conf /etc/supervisor/conf.d/
-
 # install pip requirements
 RUN pip install -vr /opt/code/server/requirements.txt 
 
