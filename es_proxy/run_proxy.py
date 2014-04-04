@@ -7,76 +7,44 @@ import os, sys
 #Set up the path
 sys.path.insert(0, os.path.abspath(".."))
 
+
 #Import the settings
-import settings
+import settings, functions
+
+from pprint import pprint
+
 
 class MainHandler(tornado.web.RequestHandler):
     def prepare(self):
         self.authenticate_request()
 
     def authenticate_request(self):
+        #Ignore any paths in settings.IGNORE_PATHS with an empty response
+        if self.request.path in settings.IGNORE_PATHS:
+            self.finish()
+            return
 
-        #Cut the first slash "/" off the path and split the rest
-        path_parts = self.request.path[1:].split('/')
-        es_call = None
-        indices = []
-        policies = []
+        #Parse the call out into its separate parts like index / document / call
+        parsed_request = functions.parse_request(self.request)
 
-        #Step 1: Which Elastic Search call is the request making? (meta calls don't count)
-        meta_calls = ['_all', '_primary', '_local']
-        for part in path_parts:
-            if part.startswith('_') and part not in meta_calls:
-                es_call = part
-                break
-    
-        if es_call is None:
-             #We add the two calls _home, and _document that don't exist in the real elasticsearch path
-             #assuming home if the path is empty or one char and _document if the path is longer
-             if self.request.path == '/':
-                 es_call = '_home'
-             else:
-                 es_call = '_document'
-
-        print
-        print 'REQUEST: %s' % self.request.path
-        print 'PATH PARTS: %s' % path_parts
-        print 'ES CALL: %s' % es_call
-
-        #Step 2: Is this a cluster call, or a call to indices?
-        if self.request.path == '/' or path_parts[0].startswith('_') and path_parts[0] != '_all':
-            cluster_call = True
-        else:
-            cluster_call = False
-            #This is a call to an index or multiple indices - so we get those
-            request_indices = path_parts[0].split(',')
-           
-          
-        #Step 3: Find matching policies  
-        #Step 3, Part 1: Find policies that match the scope of the request
-        scope_available_policies = [] 
-        for policy in settings.POLICIES:
-            if '*' in policy.scope:
-                scope_available_policies.append(policy) 
-            elif cluster_call and 'cluster' in policy.scope: 
-                scope_available_policies.append(policy) 
-            else:
-                for request_index in request_indices:
-                    if 'index:%s' % request_index in policy.scope:
-                        scope_available_policies.append(policy) 
-            
-        #Step 3, Part 2: From the scope available policies, find policies that can be used by 
-        #this individual user
-        user_available_policies = [] 
-        for policy in scope_available_policies:
-            if '*' in policy.users:
-                user_available_policies.append(policy) 
+        #Get the policies that apply to the scope of the parsed request
+        policies = functions.get_scope_available_policies(
+                cluster = parsed_request['cluster'],
+                indices = parsed_request['indices'],
+                policies = settings.POLICIES
+            ) 
         
+        #Get policies that apply to the current user
+        policies = functions.get_user_available_policies(
+                user = None,
+                policies = policies
+            )
 
-        print 'POLICIES: %s' % policies
-        
-        if not len(user_available_policies): 
+        #If there are no policies for this user and scope / return access denied
+        if not len(policies): 
             self.set_status(403)
-            self.finish('Access Denied')
+            self.finish('Access Denied'); 
+            return
 
         #Step 4: Validate the policies and see which users have access
         #If there are no matching policies for this user, we deny access        
@@ -96,9 +64,8 @@ class MainHandler(tornado.web.RequestHandler):
 
         if not granted:
             self.set_status(403)
-            self.finish('Access Denied')
+            self.finish('Access Denied'); 
             print 'DENIED'
-        print
 
     @tornado.web.asynchronous
     def get(self, *args, **kwargs):
@@ -172,5 +139,5 @@ application = tornado.web.Application([
 tornado.httpclient.AsyncHTTPClient.configure("tornado.curl_httpclient.CurlAsyncHTTPClient")
 
 if __name__ == "__main__":
-    application.listen(8888)
+    application.listen(settings.LISTEN_PORT, address='0.0.0.0')
     tornado.ioloop.IOLoop.instance().start()
