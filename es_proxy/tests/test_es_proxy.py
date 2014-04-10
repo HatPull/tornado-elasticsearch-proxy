@@ -28,8 +28,8 @@ SAMPLE_REQUEST_AND_PARSED_REQUEST = [
         }
     },
     {
+        # Create by PUT
         'args': {
-            # Create by PUT
             'method': 'PUT',
             'uri': '/twitter/tweet/1',
             'body': '''{
@@ -42,6 +42,82 @@ SAMPLE_REQUEST_AND_PARSED_REQUEST = [
             'call': '_document',
             'cluster': False,
             'indices': ['twitter'],
+            'scripted': False
+        }
+    },
+    {
+        #Search by GET, MULTI INDEX
+        'args': {
+            'method': 'GET',
+            'uri': '/twitter,index1,index2/tweet/_search?q=user:kimchy'
+        },
+        'parsed': {
+            'call': '_search',
+            'cluster': False,
+            'indices': ['twitter', 'index1', 'index2'],
+            'scripted': False
+        }
+    },
+    {
+        #Delete the articles index
+        'args': {
+            'method': 'DELETE',
+            'uri': '/articles'
+        },
+        'parsed': {
+            'call': '_document',
+            'cluster': False,
+            'indices': ['articles'],
+            'scripted': False
+        }
+    },
+    {
+        # Create a new article
+        'args': {
+            'method': 'POST',
+            'uri': '/articles/article',
+            'body': '{"title" : "Two",   "tags" : ["foo", "bar"]}'
+        },
+        'parsed': {
+            'call': '_document',
+            'cluster': False,
+            'indices': ['articles'],
+            'scripted': False
+        }
+    },
+    {
+        # Update via POST with script
+        'args': {
+            'method': 'POST',
+            'uri': '/test/type1/1/_update',
+            # Note that in the python heredoc syntax
+            # the backslashes have to be escaped
+            'body': '''{
+                "script" : "ctx._source.text = \\"some text\\""
+                }'''
+        },
+        'parsed': {
+            'call': '_update',
+            'cluster': False,
+            'indices': ['test'],
+            'scripted': True
+        }
+    },
+    {
+        #Update via POST without script
+        'args': {
+            'method': 'POST',
+            'uri': '/test/type1/1/_update',
+            'body': '''{
+                    "doc" : {
+                        "name" : "new_name"
+                    }
+                }'''
+        },
+        'parsed': {
+            'call': '_update',
+            'cluster': False,
+            'indices': ['test'],
             'scripted': False
         }
     },
