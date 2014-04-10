@@ -13,12 +13,12 @@ def test_get_stats():
             'method': 'GET',
             'uri': '/_stats',
         },
-        'parsed': {
+        'parsed_request': {
             'call': '_stats', 'cluster': True, 'indices': [], 'scripted': False
         },
     }
     tornado_http_request = HTTPRequest(**request['args'])
-    assert parse_request(tornado_http_request) == request['parsed']
+    assert parse_request(tornado_http_request) == request['parsed_request']
 
 
 def test_get_search():
@@ -32,7 +32,7 @@ def test_get_search():
             'method': 'GET',
             'uri': '/twitter/tweet/_search?q=user:kimchy',
         },
-        'parsed': {
+        'parsed_request': {
             'call': '_search',
             'cluster': False,
             'indices': ['twitter'],
@@ -41,7 +41,7 @@ def test_get_search():
     }
 
     tornado_http_request = HTTPRequest(**request['args'])
-    assert parse_request(tornado_http_request) == request['parsed']
+    assert parse_request(tornado_http_request) == request['parsed_request']
 
 
 def test_create_by_put():
@@ -59,7 +59,7 @@ def test_create_by_put():
                     "message" : "trying out Elasticsearch"
                 }'''
         },
-        'parsed': {
+        'parsed_request': {
             'call': '_document',
             'cluster': False,
             'indices': ['twitter'],
@@ -68,7 +68,7 @@ def test_create_by_put():
     }
 
     tornado_http_request = HTTPRequest(**request['args'])
-    assert parse_request(tornado_http_request) == request['parsed']
+    assert parse_request(tornado_http_request) == request['parsed_request']
 
 
 def test_search_by_multi_index_get():
@@ -81,7 +81,7 @@ def test_search_by_multi_index_get():
             'method': 'GET',
             'uri': '/twitter,index1,index2/tweet/_search?q=user:kimchy'
         },
-        'parsed': {
+        'parsed_request': {
             'call': '_search',
             'cluster': False,
             'indices': ['twitter', 'index1', 'index2'],
@@ -90,7 +90,7 @@ def test_search_by_multi_index_get():
     }
 
     tornado_http_request = HTTPRequest(**request['args'])
-    assert parse_request(tornado_http_request) == request['parsed']
+    assert parse_request(tornado_http_request) == request['parsed_request']
 
 
 def test_delete_index():
@@ -103,7 +103,7 @@ def test_delete_index():
             'method': 'DELETE',
             'uri': '/articles'
         },
-        'parsed': {
+        'parsed_request': {
             'call': '_document',
             'cluster': False,
             'indices': ['articles'],
@@ -112,7 +112,7 @@ def test_delete_index():
     }
 
     tornado_http_request = HTTPRequest(**request['args'])
-    assert parse_request(tornado_http_request) == request['parsed']
+    assert parse_request(tornado_http_request) == request['parsed_request']
 
 
 def test_create_document_with_post():
@@ -126,7 +126,7 @@ def test_create_document_with_post():
             'uri': '/articles/article',
             'body': '{"title" : "Two",   "tags" : ["foo", "bar"]}'
         },
-        'parsed': {
+        'parsed_request': {
             'call': '_document',
             'cluster': False,
             'indices': ['articles'],
@@ -135,7 +135,7 @@ def test_create_document_with_post():
     }
 
     tornado_http_request = HTTPRequest(**request['args'])
-    assert parse_request(tornado_http_request) == request['parsed']
+    assert parse_request(tornado_http_request) == request['parsed_request']
 
 
 def test_update_document_with_script():
@@ -153,7 +153,7 @@ def test_update_document_with_script():
                 "script" : "ctx._source.text = \\"some text\\""
                 }'''
         },
-        'parsed': {
+        'parsed_request': {
             'call': '_update',
             'cluster': False,
             'indices': ['test'],
@@ -162,7 +162,7 @@ def test_update_document_with_script():
     }
 
     tornado_http_request = HTTPRequest(**request['args'])
-    assert parse_request(tornado_http_request) == request['parsed']
+    assert parse_request(tornado_http_request) == request['parsed_request']
 
 
 def test_update_document_without_script():
@@ -180,7 +180,7 @@ def test_update_document_without_script():
                     }
                 }'''
         },
-        'parsed': {
+        'parsed_request': {
             'call': '_update',
             'cluster': False,
             'indices': ['test'],
@@ -189,7 +189,7 @@ def test_update_document_without_script():
     }
 
     tornado_http_request = HTTPRequest(**request['args'])
-    assert parse_request(tornado_http_request) == request['parsed']
+    assert parse_request(tornado_http_request) == request['parsed_request']
 
 
 def test_query_by_post():
@@ -209,7 +209,7 @@ def test_query_by_post():
                 }
                 '''
         },
-        'parsed': {
+        'parsed_request': {
             'call': '_search',
             'cluster': False,
             'indices': ['articles'],
@@ -218,7 +218,7 @@ def test_query_by_post():
     }
 
     tornado_http_request = HTTPRequest(**request['args'])
-    assert parse_request(tornado_http_request) == request['parsed']
+    assert parse_request(tornado_http_request) == request['parsed_request']
 
 
 def test_query_by_post_with_script_fields():
@@ -246,7 +246,7 @@ def test_query_by_post_with_script_fields():
                 }
                 '''
         },
-        'parsed': {
+        'parsed_request': {
             'call': '_search',
             'cluster': False,
             'indices': ['articles'],
@@ -255,4 +255,4 @@ def test_query_by_post_with_script_fields():
     }
 
     tornado_http_request = HTTPRequest(**request['args'])
-    assert parse_request(tornado_http_request) == request['parsed']
+    assert parse_request(tornado_http_request) == request['parsed_request']
