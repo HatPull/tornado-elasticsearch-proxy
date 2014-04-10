@@ -104,12 +104,12 @@ SAMPLE_REQUESTS = [
 
 print
 print '######################### PARSE REQUEST ##########################'
-print 
+print
 
 for request_args in SAMPLE_REQUESTS:
     tornado_http_request = HTTPRequest(**request_args)
-    print 
-    print request_args['uri']
+    print
+    print "uri: %s" % request_args['uri']
     # if 'body' in request_args.keys():
     #     print request_args['body']
     pprint(functions.parse_request(tornado_http_request))

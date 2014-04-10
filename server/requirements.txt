@@ -3,3 +3,4 @@ tornado==3.2
 
 #http://www.tornadoweb.org/en/stable/httpclient.html#module-tornado.httpclient
 pycurl==7.19.0
+pytest==2.5.2
