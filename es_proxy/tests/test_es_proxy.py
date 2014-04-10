@@ -5,7 +5,7 @@ from ..functions import parse_request
 
 SAMPLE_REQUEST_AND_PARSED_REQUEST = [
     {
-        'description': 'Get information on the stats',
+        # Get information on the stats
         'args': {
             'method': 'GET',
             'uri': '/_stats',
@@ -15,13 +15,31 @@ SAMPLE_REQUEST_AND_PARSED_REQUEST = [
         },
     },
     {
-        'description': 'Search by GET',
+        # Search by GET
         'args': {
             'method': 'GET',
             'uri': '/twitter/tweet/_search?q=user:kimchy',
         },
         'parsed': {
             'call': '_search',
+            'cluster': False,
+            'indices': ['twitter'],
+            'scripted': False
+        }
+    },
+    {
+        'args': {
+            # Create by PUT
+            'method': 'PUT',
+            'uri': '/twitter/tweet/1',
+            'body': '''{
+                    "user" : "kimchy",
+                    "post_date" : "2009-11-15T14:12:12",
+                    "message" : "trying out Elasticsearch"
+                }'''
+        },
+        'parsed': {
+            'call': '_document',
             'cluster': False,
             'indices': ['twitter'],
             'scripted': False
