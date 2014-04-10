@@ -2,16 +2,15 @@
 import tornado.ioloop
 import tornado.web
 import tornado.httpclient
-import os, sys
+import os
+import sys
 
 #Set up the path
 sys.path.insert(0, os.path.abspath(".."))
 
-
-#Import the settings
-import settings, functions
-
-from pprint import pprint
+#Import the settings and functions
+import settings
+import functions
 
 
 class MainHandler(tornado.web.RequestHandler):
@@ -19,6 +18,7 @@ class MainHandler(tornado.web.RequestHandler):
         self.authenticate_request()
 
     def authenticate_request(self):
+        import pdb; pdb.set_trace()
         #Ignore any paths in settings.IGNORE_PATHS with an empty response
         if self.request.path in settings.IGNORE_PATHS:
             self.finish()
@@ -29,25 +29,25 @@ class MainHandler(tornado.web.RequestHandler):
 
         #Get the policies that apply to the scope of the parsed request
         policies = functions.get_scope_available_policies(
-                cluster = parsed_request['cluster'],
-                indices = parsed_request['indices'],
-                policies = settings.POLICIES
-            ) 
-        
+            cluster=parsed_request['cluster'],
+            indices=parsed_request['indices'],
+            policies=settings.POLICIES
+        )
+
         #Get policies that apply to the current user
         policies = functions.get_user_available_policies(
-                user = None,
-                policies = policies
-            )
+            user=None,
+            policies=policies
+        )
 
         #If there are no policies for this user and scope / return access denied
-        if not len(policies): 
+        if not len(policies):
             self.set_status(403)
-            self.finish('Access Denied'); 
+            self.finish('Access Denied')
             return
 
         #Step 4: Validate the policies and see which users have access
-        #If there are no matching policies for this user, we deny access        
+        #If there are no matching policies for this user, we deny access
         granted = False
         for policy in policies:
             if policy['user'] in [logged_in_user, 'anonymous', '*']:
@@ -64,7 +64,7 @@ class MainHandler(tornado.web.RequestHandler):
 
         if not granted:
             self.set_status(403)
-            self.finish('Access Denied'); 
+            self.finish('Access Denied')
             print 'DENIED'
 
     @tornado.web.asynchronous
@@ -84,18 +84,15 @@ class MainHandler(tornado.web.RequestHandler):
         self.call_cluster()
 
     @tornado.web.asynchronous
-    def head(self, *args, **kwargs):
-        self.call_cluster()
-
-    @tornado.web.asynchronous
     def options(self, *args, **kwargs):
         self.call_cluster()
 
     def call_cluster(self):
         #Based on: https://github.com/senko/tornado-proxy/blob/master/tornado_proxy/proxy.py
         def handle_response(response):
-            if response.error and not isinstance(response.error,
-                    tornado.httpclient.HTTPError):
+            if response.error \
+                and not isinstance(
+                    response.error, tornado.httpclient.HTTPError):
                 self.set_status(500)
                 self.finish('Internal server error')
             else:
@@ -108,18 +105,18 @@ class MainHandler(tornado.web.RequestHandler):
                     self.write(response.body)
                 self.finish()
 
-        remote_url = config['cluster']['url'] + self.request.path 
+        remote_url = config['cluster']['url'] + self.request.path
         if self.request.query:
             remote_url += '?' + self.request.query
-        
+
         req = tornado.httpclient.HTTPRequest(
             url=remote_url,
             auth_mode=config['cluster']['auth_mode'],
             auth_username=config['cluster']['auth_username'],
             auth_password=config['cluster']['auth_password'],
-            method=self.request.method, 
+            method=self.request.method,
             body=self.request.body,
-            )
+        )
         client = tornado.httpclient.AsyncHTTPClient()
         try:
             client.fetch(req, handle_response)
@@ -130,7 +127,7 @@ class MainHandler(tornado.web.RequestHandler):
                 self.set_status(500)
                 self.write('Internal server error')
                 self.finish()
- 
+
 
 application = tornado.web.Application([
     (r"(.*)", MainHandler),
