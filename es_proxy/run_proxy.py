@@ -6,7 +6,7 @@ import os
 import sys
 
 #Set up the path
-sys.path.insert(0, os.path.abspath(".."))
+sys.path.insert(0, os.path.abspath('..'))
 
 #Import the settings and functions
 import settings
@@ -18,7 +18,6 @@ class MainHandler(tornado.web.RequestHandler):
         self.authenticate_request()
 
     def authenticate_request(self):
-        import pdb; pdb.set_trace()
         #Ignore any paths in settings.IGNORE_PATHS with an empty response
         if self.request.path in settings.IGNORE_PATHS:
             self.finish()
@@ -52,7 +51,7 @@ class MainHandler(tornado.web.RequestHandler):
         for policy in policies:
             if policy['user'] in [logged_in_user, 'anonymous', '*']:
                 for permission_name in policy['permissions']:
-                    permission = config['permissions'][permission_name]
+                    permission = settings['PERMISSIONS'][permission_name]
                     if (permission['allow_calls'] == '*' or es_call in permission['allow_calls']) \
                     and (permission['allow_methods'] == '*' or self.request.method in permission['allow_methods']):
                         granted = True
@@ -105,15 +104,15 @@ class MainHandler(tornado.web.RequestHandler):
                     self.write(response.body)
                 self.finish()
 
-        remote_url = config['cluster']['url'] + self.request.path
+        remote_url = settings['ELASTICSEARCH']['url'] + self.request.path
         if self.request.query:
             remote_url += '?' + self.request.query
 
         req = tornado.httpclient.HTTPRequest(
             url=remote_url,
-            auth_mode=config['cluster']['auth_mode'],
-            auth_username=config['cluster']['auth_username'],
-            auth_password=config['cluster']['auth_password'],
+            auth_mode=settings['ELASTICSEARCH']['auth_mode'],
+            auth_username=settings['ELASTICSEARCH']['auth_username'],
+            auth_password=settings['ELASTICSEARCH']['auth_password'],
             method=self.request.method,
             body=self.request.body,
         )
