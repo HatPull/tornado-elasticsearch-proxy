@@ -14,6 +14,20 @@ SAMPLE_REQUEST_AND_PARSED_REQUEST = [
             'call': '_stats', 'cluster': True, 'indices': [], 'scripted': False
         },
     },
+    {
+        'description': 'Search by GET',
+        'args': {
+            'method': 'GET',
+            'uri': '/twitter/tweet/_search?q=user:kimchy',
+        },
+        'parsed': {
+            'call': '_search',
+            'cluster': False,
+            'indices': ['twitter'],
+            'scripted': False
+        }
+    },
+
 ]
 
 
@@ -24,5 +38,4 @@ def test_pytest():
 def test_requests_to_parse_request():
     for sample in SAMPLE_REQUEST_AND_PARSED_REQUEST:
         tornado_http_request = HTTPRequest(**sample['args'])
-        msg = "Problem with request: %s " % sample['description']
-        assert parse_request(tornado_http_request) == sample['parsed'], msg
+        assert parse_request(tornado_http_request) == sample['parsed']
