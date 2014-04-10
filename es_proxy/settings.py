@@ -63,17 +63,13 @@ POLICIES = [
     #All users have access to the kibana internal index
     #scope could be indices/aliases/cluster
     {
-        'scope': {
-            'indices': ['kibana-int'],
-        },
+        'indices': ['kibana-int', ],
         'users': ['*'],
         'permissions': ['index_write', 'index_read']
     },
     #Kibana needs to know about the cluster _nodes
     {
-        'scope': {
-            'cluster': True
-        },
+        'cluster': True,
         'users': ['*'],
         'permissions': ['kibana_admin']
     }
@@ -83,4 +79,3 @@ POLICIES = [
 IGNORE_PATHS = [
     '/favicon.ico'
 ]
-    
