@@ -3,9 +3,12 @@ from tornado.httpserver import HTTPRequest
 from ..functions import parse_request
 
 
-SAMPLE_REQUEST_AND_PARSED_REQUEST = [
-    {
-        # Get information on the stats
+def test_get_stats():
+    """ Test parse_request for 'Get information on the stats
+        returns correctly parsed request.
+    """
+
+    request = {
         'args': {
             'method': 'GET',
             'uri': '/_stats',
@@ -13,8 +16,17 @@ SAMPLE_REQUEST_AND_PARSED_REQUEST = [
         'parsed': {
             'call': '_stats', 'cluster': True, 'indices': [], 'scripted': False
         },
-    },
-    {
+    }
+    tornado_http_request = HTTPRequest(**request['args'])
+    assert parse_request(tornado_http_request) == request['parsed']
+
+
+def test_get_search():
+    """ Test parse_request for 'Search by GET'
+        returns correctly parsed request.
+    """
+
+    request = {
         # Search by GET
         'args': {
             'method': 'GET',
@@ -26,9 +38,18 @@ SAMPLE_REQUEST_AND_PARSED_REQUEST = [
             'indices': ['twitter'],
             'scripted': False
         }
-    },
-    {
-        # Create by PUT
+    }
+
+    tornado_http_request = HTTPRequest(**request['args'])
+    assert parse_request(tornado_http_request) == request['parsed']
+
+
+def test_create_by_put():
+    """ Test parse_request for 'Create by PUT'
+        returns correctly parsed request.
+    """
+
+    request = {
         'args': {
             'method': 'PUT',
             'uri': '/twitter/tweet/1',
@@ -44,9 +65,18 @@ SAMPLE_REQUEST_AND_PARSED_REQUEST = [
             'indices': ['twitter'],
             'scripted': False
         }
-    },
-    {
-        #Search by GET, MULTI INDEX
+    }
+
+    tornado_http_request = HTTPRequest(**request['args'])
+    assert parse_request(tornado_http_request) == request['parsed']
+
+
+def test_search_by_multi_index_get():
+    """ Test parse_request for 'Search by GET, MULTI INDEX'
+        returns correctly parsed request.
+    """
+
+    request = {
         'args': {
             'method': 'GET',
             'uri': '/twitter,index1,index2/tweet/_search?q=user:kimchy'
@@ -57,9 +87,18 @@ SAMPLE_REQUEST_AND_PARSED_REQUEST = [
             'indices': ['twitter', 'index1', 'index2'],
             'scripted': False
         }
-    },
-    {
-        #Delete the articles index
+    }
+
+    tornado_http_request = HTTPRequest(**request['args'])
+    assert parse_request(tornado_http_request) == request['parsed']
+
+
+def test_delete_index():
+    """ Test parse_request for 'Delete the articles index'
+        returns correctly parsed request.
+    """
+
+    request = {
         'args': {
             'method': 'DELETE',
             'uri': '/articles'
@@ -70,9 +109,18 @@ SAMPLE_REQUEST_AND_PARSED_REQUEST = [
             'indices': ['articles'],
             'scripted': False
         }
-    },
-    {
-        # Create a new article
+    }
+
+    tornado_http_request = HTTPRequest(**request['args'])
+    assert parse_request(tornado_http_request) == request['parsed']
+
+
+def test_create_document_with_post():
+    """ Test parse_request for 'Create a new article document with POST'
+        returns correctly parsed request.
+    """
+
+    request = {
         'args': {
             'method': 'POST',
             'uri': '/articles/article',
@@ -84,9 +132,18 @@ SAMPLE_REQUEST_AND_PARSED_REQUEST = [
             'indices': ['articles'],
             'scripted': False
         }
-    },
-    {
-        # Update via POST with script
+    }
+
+    tornado_http_request = HTTPRequest(**request['args'])
+    assert parse_request(tornado_http_request) == request['parsed']
+
+
+def test_update_document_with_script():
+    """ Test parse_request for 'Update via POST with script'
+        returns correctly parsed request.
+    """
+
+    request = {
         'args': {
             'method': 'POST',
             'uri': '/test/type1/1/_update',
@@ -102,9 +159,18 @@ SAMPLE_REQUEST_AND_PARSED_REQUEST = [
             'indices': ['test'],
             'scripted': True
         }
-    },
-    {
-        #Update via POST without script
+    }
+
+    tornado_http_request = HTTPRequest(**request['args'])
+    assert parse_request(tornado_http_request) == request['parsed']
+
+
+def test_update_document_without_script():
+    """ Test parse_request for 'Update via POST without script
+        returns correctly parsed request.
+    """
+
+    request = {
         'args': {
             'method': 'POST',
             'uri': '/test/type1/1/_update',
@@ -120,16 +186,73 @@ SAMPLE_REQUEST_AND_PARSED_REQUEST = [
             'indices': ['test'],
             'scripted': False
         }
-    },
+    }
 
-]
-
-
-def test_pytest():
-    assert True, "This should always work."
+    tornado_http_request = HTTPRequest(**request['args'])
+    assert parse_request(tornado_http_request) == request['parsed']
 
 
-def test_requests_to_parse_request():
-    for sample in SAMPLE_REQUEST_AND_PARSED_REQUEST:
-        tornado_http_request = HTTPRequest(**sample['args'])
-        assert parse_request(tornado_http_request) == sample['parsed']
+def test_query_by_post():
+    """ Test parse_request for 'Query via POST without script fields
+        returns correctly parsed request.
+    """
+
+    request = {
+        'args': {
+            'method': 'POST',
+            'uri': '/articles/_search?pretty=true',
+            'body': ''' {
+                    "query" : { "query_string" : {"query" : "T*"} },
+                    "facets" : {
+                      "tags" : { "terms" : {"field" : "tags"} }
+                    }
+                }
+                '''
+        },
+        'parsed': {
+            'call': '_search',
+            'cluster': False,
+            'indices': ['articles'],
+            'scripted': False
+        }
+    }
+
+    tornado_http_request = HTTPRequest(**request['args'])
+    assert parse_request(tornado_http_request) == request['parsed']
+
+
+def test_query_by_post_with_script_fields():
+    """  Query via POST with script fields
+        returns correctly parsed request.
+    """
+
+    request = {
+        'args': {
+            'method': 'GET',
+            'uri': '/articles/_search?pretty=true',
+            'body': ''' {
+                    "query" :  { "query_string" : {"query" : "T*"} },
+                    "script_fields" : {
+                        "test1" : {
+                            "script" : "doc['my_field_name'].value * 2"
+                        },
+                        "test2" : {
+                            "script" : "doc['my_field_name'].value * factor",
+                            "params" : {
+                                "factor"  : 2.0
+                            }
+                        }
+                    }
+                }
+                '''
+        },
+        'parsed': {
+            'call': '_search',
+            'cluster': False,
+            'indices': ['articles'],
+            'scripted': True
+        }
+    }
+
+    tornado_http_request = HTTPRequest(**request['args'])
+    assert parse_request(tornado_http_request) == request['parsed']
