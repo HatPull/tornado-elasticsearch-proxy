@@ -256,3 +256,43 @@ def test_query_by_post_with_script_fields():
 
     tornado_http_request = HTTPRequest(**request['args'])
     assert parse_request(tornado_http_request) == request['parsed_request']
+
+
+def test_all_settings():
+    """ Test parse_request for '_all _settings GET'
+        returns correctly parsed request.
+    """
+    request = {
+        'args': {
+            'method': 'GET',
+            'uri': '/_all/_settings',
+        },
+        'parsed_request': {
+            'indices': ['_all'],
+            'cluster': False,
+            'call': '_settings',
+            'scripted': False
+        }
+    }
+    tornado_http_request = HTTPRequest(**request['args'])
+    assert parse_request(tornado_http_request) == request['parsed_request']
+
+
+def test_home():
+    """ Test parse_request for '_all _settings GET'
+        returns correctly parsed request.
+    """
+    request = {
+        'args': {
+            'method': 'GET',
+            'uri': '/',
+        },
+        'parsed_request': {
+            'indices': [],
+            'cluster': True,
+            'call': '_home',
+            'scripted': False
+        }
+    }
+    tornado_http_request = HTTPRequest(**request['args'])
+    assert parse_request(tornado_http_request) == request['parsed_request']

@@ -25,18 +25,22 @@ def parse_request(request):
 
     parsed = {}
 
-    #Figure out what the call is to elasticsearch
-    #Cut the first slash "/" off the path and split the rest on forward slash
+    # Figure out what the call is to elasticsearch
+    # Cut the first slash "/" off the path and split the rest on forward slash
     path_parts = request.path[1:].split('/')
 
+    # we are looking for calls which are not meta_calls.
+    # if we find an underscored word, not in the meta_calls list,
+    # it becomes the returned call.
     meta_calls = ['_all', '_primary', '_local']
     for part in path_parts:
         if part.startswith('_') and part not in meta_calls:
             parsed['call'] = part
             break
 
-    # We add the two calls _home, and _document
-    # that don't exist in the real elasticsearch path
+    # If a call (such as _search or _update) was not found,
+    # we add the two calls _home, and _document
+    # that don't exist in the real elasticsearch path.
     # assuming home if the path is empty or one char
     # and _document if the path is longer
     if 'call' not in parsed.keys():
