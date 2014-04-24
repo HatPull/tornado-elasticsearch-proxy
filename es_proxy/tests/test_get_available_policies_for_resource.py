@@ -1,13 +1,13 @@
-from ..functions import get_available_policies_for_resource
+from ..functions import get_policies_for_resource
 
 from .constants import SAMPLE_POLICIES
 
 
-def test_get_available_policies_for_resource_for_index_kibana_int():
+def test_get_policies_for_resource_for_index_kibana_int():
     """ For index kibana-int. """
     cluster = False
     indices = ['kibana-int']
-    scope_policies = get_available_policies_for_resource(
+    scope_policies = get_policies_for_resource(
         cluster, indices, SAMPLE_POLICIES
     )
 
@@ -22,8 +22,8 @@ def test_get_available_policies_for_resource_for_index_kibana_int():
     assert scope_policies == expected_scope_policies
 
 
-def test_get_available_policies_for_resource_with_bad_policy():
-    """ Testing get_available_policies_for_resource
+def test_get_policies_for_resource_with_bad_policy():
+    """ Testing get_policies_for_resource
         with bad scope key.
     """
 
@@ -35,7 +35,7 @@ def test_get_available_policies_for_resource_with_bad_policy():
     ]
     cluster = False
     indices = None
-    scope_policies = get_available_policies_for_resource(
+    scope_policies = get_policies_for_resource(
         cluster, indices, BAD_POLICY
     )
 
@@ -44,18 +44,14 @@ def test_get_available_policies_for_resource_with_bad_policy():
     assert scope_policies == expected_scope_policies
 
 
-
-
-
-
-def test_get_available_policies_for_resource_for_non_existing_index():
-    """ Testing get_available_policies_for_resource
+def test_get_policies_for_resource_for_non_existing_index():
+    """ Testing get_policies_for_resource
         for non existing index 'not_index'.
     """
 
     cluster = False
     indices = ['not_index']
-    scope_policies = get_available_policies_for_resource(
+    scope_policies = get_policies_for_resource(
         cluster, indices, SAMPLE_POLICIES
     )
 
@@ -64,14 +60,14 @@ def test_get_available_policies_for_resource_for_non_existing_index():
     assert scope_policies == expected_scope_policies
 
 
-def test_get_available_policies_for_resource_for_cluster():
-    """ Testing get_available_policies_for_resource
+def test_get_policies_for_resource_for_cluster():
+    """ Testing get_policies_for_resource
         for cluster = True'.
     """
 
     cluster = True
     indices = []
-    scope_policies = get_available_policies_for_resource(
+    scope_policies = get_policies_for_resource(
         cluster, indices, SAMPLE_POLICIES
     )
 
@@ -86,13 +82,13 @@ def test_get_available_policies_for_resource_for_cluster():
     assert scope_policies == expected_scope_policies
 
 
-def test_get_available_policies_for_resource_for_all_indices():
-    """ Testing get_available_policies_for_resource
+def test_get_policies_for_resource_for_all_indices():
+    """ Testing get_policies_for_resource
         for indices = ['*'].
     """
     cluster = False
-    indices = ['*',]
-    scope_policies = get_available_policies_for_resource(
+    indices = ['*', ]
+    scope_policies = get_policies_for_resource(
         cluster, indices, SAMPLE_POLICIES
     )
 

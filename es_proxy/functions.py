@@ -70,7 +70,7 @@ def parse_request(request):
     return parsed
 
 
-def get_available_policies_for_resource(cluster, indices, policies):
+def get_policies_for_resource(cluster, indices, policies):
     """
     Find policies that apply to a given resource.
 
