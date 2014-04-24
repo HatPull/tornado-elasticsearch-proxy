@@ -70,9 +70,9 @@ def parse_request(request):
     return parsed
 
 
-def get_scope_available_policies(cluster, indices, policies):
+def get_available_policies_for_resource(cluster, indices, policies):
     """
-    Find policies that apply to a given scope
+    Find policies that apply to a given resource.
 
     cluster / boolean /
         does the policy apply to the root scope
@@ -82,7 +82,7 @@ def get_scope_available_policies(cluster, indices, policies):
     policies / list of dicts /
         A list of policies to check against the cluster and indices
 
-    Returns: a list of policies that apply to the given scope
+    Returns: a list of policies that apply to the given resource.
 
     """
     scope_available_policies = []
