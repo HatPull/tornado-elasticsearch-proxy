@@ -1,5 +1,6 @@
 #!/bin/bash
 python /opt/code/server/save_env.py
+pip install -vr /opt/code/server/requirements.txt
 
 cd /opt/code/es_proxy
 
