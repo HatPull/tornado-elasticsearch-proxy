@@ -1,28 +1,28 @@
 
 SAMPLE_POLICIES = [
     {
-        'scope': {
+        'resources': {
             'indices': ['kibana-int', ],
         },
         'users': ['*'],
         'permissions': ['index_write', 'index_read']
     },
     {
-        'scope': {
+        'resources': {
             'cluster': True
         },
         'users': ['alan'],
         'permissions': ['kibana_admin', ]
     },
     {
-        'scope': {
+        'resources': {
             'indices': ['joes_index', ],
         },
         'users': ['joe'],
         'permissions': ['index_write', 'index_read']
     },
     {
-        'scope': {
+        'resources': {
             'indices': ['*', ],
         },
         'users': ['auditor', ],

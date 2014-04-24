@@ -118,21 +118,21 @@ for request_args in SAMPLE_REQUESTS:
 
 SAMPLE_POLICIES = [
     { 
-        'scope' : {
+        'resources' : {
             'indices' : ['kibana-int'],
          },
         'users' : ['*'],
         'permissions' : ['index_write', 'index_read']
     },
     {   
-        'scope' : {
+        'resources' : {
             'cluster' : True
         },
         'users' : ['alan'],
         'permissions' : ['kibana_admin']
     },
     {   
-        'scope' : {
+        'resources' : {
             'indices' : ['joes_index'],
         },
         'users' : ['joe'],
@@ -142,29 +142,29 @@ SAMPLE_POLICIES = [
 
 
 print
-print '######################### SCOPE POLICIES ##########################'
-print 
+print '######################### RESOURCE POLICIES ##########################'
+print
 
-#Test a few scenarios for scope
+#Test a few scenarios for resource
 print "For index kibana-int"
 cluster = False
 indices = ['kibana-int']
-scope_policies = functions.get_scope_available_policies(cluster, indices, SAMPLE_POLICIES)
-pprint(scope_policies)
+resource_policies = functions.get_resource_policies(cluster, indices, SAMPLE_POLICIES)
+pprint(resource_policies)
 print
 
 print "For non existing index not_index"
 cluster = False
 indices = ['not_index']
-scope_policies = functions.get_scope_available_policies(cluster, indices, SAMPLE_POLICIES)
-pprint(scope_policies)
+resource_policies = functions.get_policies_for_resource(cluster, indices, SAMPLE_POLICIES)
+pprint(resource_policies)
 print
 
 print "Cluster"
 cluster = True
 indices = []
-scope_policies = functions.get_scope_available_policies(cluster, indices, SAMPLE_POLICIES)
-pprint(scope_policies)
+resource_policies = functions.get_policies_for_resource(cluster, indices, SAMPLE_POLICIES)
+pprint(resource_policies)
 print
 
 print
@@ -174,13 +174,13 @@ print
 print "User: joe"
 #Test a few policies for users
 user = 'joe'
-user_policies = functions.get_user_available_policies(user, SAMPLE_POLICIES)
+user_policies = functions.get_policies_for_user(user, SAMPLE_POLICIES)
 pprint(user_policies)
 print
 
 print "User: bob"
 #Test a few policies for users
 user = 'bob'
-user_policies = functions.get_user_available_policies(user, SAMPLE_POLICIES)
+user_policies = functions.get_policies_for_user(user, SAMPLE_POLICIES)
 pprint(user_policies)
 print

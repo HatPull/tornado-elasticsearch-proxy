@@ -10,12 +10,12 @@ def test_get_policies_for_user():
     expected_user_policies = [
         {
             'permissions': ['index_write', 'index_read'],
-            'scope': {'indices': ['kibana-int']},
+            'resources': {'indices': ['kibana-int']},
             'users': ['*']
         },
         {
             'permissions': ['kibana_admin'],
-            'scope': {'cluster': True},
+            'resources': {'cluster': True},
             'users': ['alan']
         }
     ]

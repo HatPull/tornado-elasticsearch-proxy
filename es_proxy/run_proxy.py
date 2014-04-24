@@ -26,20 +26,20 @@ class MainHandler(tornado.web.RequestHandler):
         #Parse the call out into its separate parts like index / document / call
         parsed_request = functions.parse_request(self.request)
 
-        #Get the policies that apply to the scope of the parsed request
-        policies = functions.get_scope_available_policies(
+        #Get the policies that apply to the resource of the parsed request
+        policies = functions.get_policies_for_resource(
             cluster=parsed_request['cluster'],
             indices=parsed_request['indices'],
             policies=settings.POLICIES
         )
 
         #Get policies that apply to the current user
-        policies = functions.get_user_available_policies(
+        policies = functions.get_policies_for_user(
             user=None,
             policies=policies
         )
 
-        #If there are no policies for this user and scope / return access denied
+        #If there are no policies for this user and resource / return access denied
         if not len(policies):
             self.set_status(403)
             self.finish('Access Denied')

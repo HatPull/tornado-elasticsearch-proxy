@@ -12,7 +12,7 @@ def parse_request(request):
         call / string /
             a string representing the type of call being made to elasticsearch
         cluster / boolean /
-            does this request apply to the cluster scope?
+            does this request apply to the cluster resources?
         indices / list /
             a simple list of indices that are included in the request
         scripted / boolean /
@@ -75,7 +75,7 @@ def get_policies_for_resource(cluster, indices, policies):
     Find policies that apply to a given resource.
 
     cluster / boolean /
-        does the policy apply to the root scope
+        does the policy apply to the root resources
         or calls that read about or affect the cluster
     indices / list /
         a simple list of index name that the policy applies to
@@ -85,20 +85,20 @@ def get_policies_for_resource(cluster, indices, policies):
     Returns: a list of policies that apply to the given resource.
 
     """
-    scope_available_policies = []
+    resource_policies = []
     for policy in policies:
         if (
-            'cluster' in policy['scope'].keys()
+            'cluster' in policy['resources'].keys()
             and cluster
-            and policy['scope']['cluster']
+            and policy['resources']['cluster']
         ):
-            scope_available_policies.append(policy)
-        elif 'indices' in policy['scope'].keys():
+            resource_policies.append(policy)
+        elif 'indices' in policy['resources'].keys():
             for index in indices:
-                if index in policy['scope']['indices']:
-                    scope_available_policies.append(policy)
+                if index in policy['resources']['indices']:
+                    resource_policies.append(policy)
 
-    return scope_available_policies
+    return resource_policies
 
 
 def get_policies_for_user(user, policies):
@@ -110,7 +110,7 @@ def get_policies_for_user(user, policies):
     policies / list of dicts /
         A list of policies to check against the cluster and indices
 
-    Returns: a list of policies that apply to the given scope
+    Returns: a list of policies that apply to the given user
 
     """
     user_available_policies = []
