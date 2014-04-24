@@ -22,6 +22,32 @@ def test_get_available_policies_for_resource_for_index_kibana_int():
     assert scope_policies == expected_scope_policies
 
 
+def test_get_available_policies_for_resource_with_bad_policy():
+    """ Testing get_available_policies_for_resource
+        with bad scope key.
+    """
+
+    BAD_POLICY = [
+        {
+            'scope': {'weird_key': ['*']},
+            'users': ['*']
+        }
+    ]
+    cluster = False
+    indices = None
+    scope_policies = get_available_policies_for_resource(
+        cluster, indices, BAD_POLICY
+    )
+
+    expected_scope_policies = []
+
+    assert scope_policies == expected_scope_policies
+
+
+
+
+
+
 def test_get_available_policies_for_resource_for_non_existing_index():
     """ Testing get_available_policies_for_resource
         for non existing index 'not_index'.
@@ -54,6 +80,27 @@ def test_get_available_policies_for_resource_for_cluster():
             'permissions': ['kibana_admin'],
             'scope': {'cluster': True},
             'users': ['alan']
+        }
+    ]
+
+    assert scope_policies == expected_scope_policies
+
+
+def test_get_available_policies_for_resource_for_all_indices():
+    """ Testing get_available_policies_for_resource
+        for indices = ['*'].
+    """
+    cluster = False
+    indices = ['*',]
+    scope_policies = get_available_policies_for_resource(
+        cluster, indices, SAMPLE_POLICIES
+    )
+
+    expected_scope_policies = [
+        {
+            'scope': {'indices': ['*']},
+            'users': ['auditor'],
+            'permissions': ['index_read']
         }
     ]
 

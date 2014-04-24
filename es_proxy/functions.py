@@ -87,9 +87,7 @@ def get_available_policies_for_resource(cluster, indices, policies):
     """
     scope_available_policies = []
     for policy in policies:
-        if '*' in policy['scope']:
-            scope_available_policies.append(policy)
-        elif (
+        if (
             'cluster' in policy['scope'].keys()
             and cluster
             and policy['scope']['cluster']
@@ -99,10 +97,11 @@ def get_available_policies_for_resource(cluster, indices, policies):
             for index in indices:
                 if index in policy['scope']['indices']:
                     scope_available_policies.append(policy)
+
     return scope_available_policies
 
 
-def get_user_available_policies(user, policies):
+def get_available_policies_for_user(user, policies):
     """
     Find policies that apply to a given user
 

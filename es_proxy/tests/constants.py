@@ -2,7 +2,7 @@
 SAMPLE_POLICIES = [
     {
         'scope': {
-            'indices': ['kibana-int'],
+            'indices': ['kibana-int', ],
         },
         'users': ['*'],
         'permissions': ['index_write', 'index_read']
@@ -12,13 +12,20 @@ SAMPLE_POLICIES = [
             'cluster': True
         },
         'users': ['alan'],
-        'permissions': ['kibana_admin']
+        'permissions': ['kibana_admin', ]
     },
     {
         'scope': {
-            'indices': ['joes_index'],
+            'indices': ['joes_index', ],
         },
         'users': ['joe'],
         'permissions': ['index_write', 'index_read']
-    }
+    },
+    {
+        'scope': {
+            'indices': ['*', ],
+        },
+        'users': ['auditor', ],
+        'permissions': ['index_read']
+    },
 ]
