@@ -1,21 +1,6 @@
 from .constants import SAMPLE_POLICIES
 from ..functions import get_policies_for_user
-# from pprint import pprint
 
-
-# print "User: joe"
-# #Test a few policies for users
-# user = 'joe'
-# user_policies = get_user_available_policies(user, SAMPLE_POLICIES)
-# pprint(user_policies)
-# print
-
-# print "User: bob"
-# #Test a few policies for users
-# user = 'bob'
-# user_policies = get_user_available_policies(user, SAMPLE_POLICIES)
-# pprint(user_policies)
-# print
 
 def test_get_policies_for_user():
     """ Testing get_policies_for_user
