@@ -101,7 +101,7 @@ def get_available_policies_for_resource(cluster, indices, policies):
     return scope_available_policies
 
 
-def get_available_policies_for_user(user, policies):
+def get_policies_for_user(user, policies):
     """
     Find policies that apply to a given user
 
