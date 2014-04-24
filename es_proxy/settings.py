@@ -58,10 +58,10 @@ ELASTICSEARCH = {
     'auth_password': '',
 }
 
-#permissions get granted to users in a scope based on policies
+#permissions get granted to users on resources based on policies
 POLICIES = [
-    #All users have access to the kibana internal index
-    #scope could be indices/aliases/cluster
+    # All users have access to the kibana internal index
+    # a resource could be indices/aliases/cluster
     {
         'indices': ['kibana-int', ],
         'users': ['*'],
@@ -72,7 +72,14 @@ POLICIES = [
         'cluster': True,
         'users': ['*'],
         'permissions': ['kibana_admin']
-    }
+    },
+    # sample
+    {
+        'indices': ['sample_index', ],
+        'users': ['sample_user'],
+        'permissions': ['index_read']
+    },
+
 ]
 
 #Ignore any requests for these paths
