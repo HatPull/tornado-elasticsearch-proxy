@@ -100,15 +100,15 @@ class MainHandler(tornado.web.RequestHandler):
                     self.write(response.body)
                 self.finish()
 
-        remote_url = settings['ELASTICSEARCH']['url'] + self.request.path
+        remote_url = settings.ELASTICSEARCH['url'] + self.request.path
         if self.request.query:
             remote_url += '?' + self.request.query
 
         req = tornado.httpclient.HTTPRequest(
             url=remote_url,
-            auth_mode=settings['ELASTICSEARCH']['auth_mode'],
-            auth_username=settings['ELASTICSEARCH']['auth_username'],
-            auth_password=settings['ELASTICSEARCH']['auth_password'],
+            auth_mode=settings.ELASTICSEARCH['auth_mode'],
+            auth_username=settings.ELASTICSEARCH['auth_username'],
+            auth_password=settings.ELASTICSEARCH['auth_password'],
             method=self.request.method,
             body=self.request.body,
         )
