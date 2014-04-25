@@ -12,7 +12,7 @@ echo "Example command: python run_proxy.py"
 echo "Then open http://localhost:${ES_PROXY_LISTEN_PORT} to try out the server"
 echo
 echo "Run tests"
-echo "python tests.py"
+echo "py.test --cov . --cov-report html"
 echo
 echo "Note: If you are using vagrant, port ${ES_PROXY_LISTEN_PORT} must also be forwarded in your Vagrantfile"
 echo
