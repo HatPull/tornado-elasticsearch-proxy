@@ -18,45 +18,55 @@ class MainHandler(tornado.web.RequestHandler):
         self.authenticate_request()
 
     def authenticate_request(self):
-        #Ignore any paths in settings.IGNORE_PATHS with an empty response
+        # Ignore any paths in settings.IGNORE_PATHS with an empty response
         if self.request.path in settings.IGNORE_PATHS:
             self.finish()
             return
 
-        #Parse the call out into its separate parts like index / document / call
+        # Parse the call into its separate parts e.g. index / document / call
         parsed_request = functions.parse_request(self.request)
 
-        #Get the policies that apply to the resource of the parsed request
-        policies = functions.get_policies_for_resource(
-            cluster=parsed_request['cluster'],
-            indices=parsed_request['indices'],
+        # Get policies that apply to the current user
+        user_policies = functions.get_policies_for_user(
+            user=None,
             policies=settings.POLICIES
         )
 
-        #Get policies that apply to the current user
-        policies = functions.get_policies_for_user(
-            user=None,
-            policies=policies
+        # Get the policies that apply to the resource of the parsed request
+        policies = functions.get_policies_for_resource(
+            cluster=parsed_request['cluster'],
+            indices=parsed_request['indices'],
+            policies=user_policies
         )
 
-        #If there are no policies for this user and resource / return access denied
-        if not len(policies):
-            self.set_status(403)
-            self.finish('Access Denied')
-            return
-
-        #Step 4: Validate the policies and see which users have access
-        #If there are no matching policies for this user, we deny access
+        # Step 4: Can the user do what they are requesting,
+        # given the policies that have been found?
+        # If not, deny access.
         granted = False
+        call = parsed_request['call']
         for policy in policies:
-            if policy['user'] in [logged_in_user, 'anonymous', '*']:
-                for permission_name in policy['permissions']:
-                    permission = settings['PERMISSIONS'][permission_name]
-                    if (permission['allow_calls'] == '*' or es_call in permission['allow_calls']) \
-                    and (permission['allow_methods'] == '*' or self.request.method in permission['allow_methods']):
-                        granted = True
-                        print "USER:%s GRANTED WITH: %s" % (policy['user'], permission)
-                        break
+            for permission_name in policy['permissions']:
+                permission = settings['PERMISSIONS'][permission_name]
+
+                # Is the call authorized?
+                call_authorized = (
+                    permission['calls'] == '*' or
+                    call in permission['calls']
+                )
+
+                # Is the method authorized?
+                method_authorized = (
+                    permission['methods'] == '*' or
+                    self.request.method in permission['methods']
+                )
+
+                if call_authorized and method_authorized:
+                    granted = True
+                    print "USER:%s GRANTED WITH: %s" % (
+                        policy['user'],
+                        permission
+                    )
+                    break
 
             if granted:
                 break
@@ -87,7 +97,9 @@ class MainHandler(tornado.web.RequestHandler):
         self.call_cluster()
 
     def call_cluster(self):
-        #Based on: https://github.com/senko/tornado-proxy/blob/master/tornado_proxy/proxy.py
+        # Based on:
+        # https:// \
+        # github.com/senko/tornado-proxy/blob/master/tornado_proxy/proxy.py
         def handle_response(response):
             if response.error \
                 and not isinstance(
@@ -132,7 +144,9 @@ application = tornado.web.Application([
     (r"(.*)", MainHandler),
 ])
 
-tornado.httpclient.AsyncHTTPClient.configure("tornado.curl_httpclient.CurlAsyncHTTPClient")
+tornado.httpclient.AsyncHTTPClient.configure(
+    "tornado.curl_httpclient.CurlAsyncHTTPClient"
+)
 
 if __name__ == "__main__":
     application.listen(settings.LISTEN_PORT, address='0.0.0.0')
