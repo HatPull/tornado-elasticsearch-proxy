@@ -49,16 +49,14 @@ class MainHandler(tornado.web.RequestHandler):
                 permission = settings['PERMISSIONS'][permission_name]
 
                 # Is the call authorized?
-                call_authorized = (
-                    permission['calls'] == '*' or
+                call_authorized = \
+                    permission['calls'] == '*' or \
                     call in permission['calls']
-                )
 
                 # Is the method authorized?
-                method_authorized = (
-                    permission['methods'] == '*' or
+                method_authorized = \
+                    permission['methods'] == '*' or \
                     self.request.method in permission['methods']
-                )
 
                 if call_authorized and method_authorized:
                     granted = True
