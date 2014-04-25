@@ -1,5 +1,8 @@
 import re
 
+import settings
+
+
 script_regex = re.compile("script|script_fields[\"']+\s*:\s*\{")
 
 
@@ -121,3 +124,29 @@ def get_policies_for_user(user, policies):
             user_available_policies.append(policy)
 
     return user_available_policies
+
+
+def authenticate_call_and_method(policies, call, method):
+    """ Discover if call and method pair is found within policies.
+    """
+    for policy in policies:
+        for permission_name in policy['permissions']:
+            permission = settings.PERMISSIONS[permission_name]
+
+            # Is the call authorized?
+            call_authorized = \
+                permission['calls'] == '*' or \
+                call in permission['calls']
+
+            # Is the method authorized?
+            method_authorized = \
+                permission['methods'] == '*' or \
+                method in permission['methods']
+
+            if call_authorized and method_authorized:
+                print "USER:%s GRANTED WITH: %s" % (
+                    policy['user'],
+                    permission
+                )
+                return True
+        return False

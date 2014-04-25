@@ -10,7 +10,13 @@ sys.path.insert(0, os.path.abspath('..'))
 
 #Import the settings and functions
 import settings
-import functions
+
+from .functions import (
+    parse_request,
+    get_policies_for_resource,
+    get_policies_for_user,
+    authenticate_call_and_method
+)
 
 
 class MainHandler(tornado.web.RequestHandler):
@@ -24,50 +30,30 @@ class MainHandler(tornado.web.RequestHandler):
             return
 
         # Parse the call into its separate parts e.g. index / document / call
-        parsed_request = functions.parse_request(self.request)
+        parsed_request = parse_request(self.request)
 
         # Get policies that apply to the current user
-        user_policies = functions.get_policies_for_user(
+        user_policies = get_policies_for_user(
             user=None,
             policies=settings.POLICIES
         )
 
-        # Get the policies that apply to the resource of the parsed request
-        policies = functions.get_policies_for_resource(
+        # Refine user_policies by finding the subset of policies
+        # that apply just to the resources of the parsed request
+        policies = get_policies_for_resource(
             cluster=parsed_request['cluster'],
             indices=parsed_request['indices'],
             policies=user_policies
         )
 
-        # Step 4: Can the user do what they are requesting,
+        # Can the user do what they are requesting,
         # given the policies that have been found?
         # If not, deny access.
-        granted = False
-        call = parsed_request['call']
-        for policy in policies:
-            for permission_name in policy['permissions']:
-                permission = settings['PERMISSIONS'][permission_name]
-
-                # Is the call authorized?
-                call_authorized = \
-                    permission['calls'] == '*' or \
-                    call in permission['calls']
-
-                # Is the method authorized?
-                method_authorized = \
-                    permission['methods'] == '*' or \
-                    self.request.method in permission['methods']
-
-                if call_authorized and method_authorized:
-                    granted = True
-                    print "USER:%s GRANTED WITH: %s" % (
-                        policy['user'],
-                        permission
-                    )
-                    break
-
-            if granted:
-                break
+        granted = authenticate_call_and_method(
+            policies,
+            parsed_request['call'],
+            self.request.method
+        )
 
         if not granted:
             self.set_status(403)
