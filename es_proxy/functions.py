@@ -145,7 +145,7 @@ def authenticate_call_and_method(policies, call, method):
 
             if call_authorized and method_authorized:
                 print "USER:%s GRANTED WITH: %s" % (
-                    policy['user'],
+                    policy['users'],
                     permission
                 )
                 return True
