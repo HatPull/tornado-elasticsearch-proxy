@@ -5,10 +5,10 @@ import tornado.httpclient
 import os
 import sys
 
-#Set up the path
+# Set up the path
 sys.path.insert(0, os.path.abspath('..'))
 
-#Import the settings and functions
+# Import the settings and functions
 import settings
 
 from .functions import (
@@ -23,27 +23,50 @@ class MainHandler(tornado.web.RequestHandler):
     def prepare(self):
         self.authenticate_request()
 
+    def _get_parsed_request(self):
+        # Parse the call into its separate parts e.g. index / document / call
+        parsed_request = parse_request(self.request)
+        return parsed_request
+
+    def _get_policies(self):
+        return settings.POLICIES
+
+    def _get_policies_for_user(self):
+        # Get policies that apply to the current user
+        user_policies = get_policies_for_user(
+            user=self.request.auth_username,
+            policies=self._get_policies()
+        )
+        return user_policies
+
+    def _get_policies_for_resource(self, cluster, indicies, policies):
+        # Refine user_policies by finding the subset of policies
+        # that apply just to the resources of the parsed request
+        policies = get_policies_for_resource(
+            cluster=cluster,
+            indices=indicies,
+            policies=policies
+        )
+        return policies
+
     def authenticate_request(self):
         # Ignore any paths in settings.IGNORE_PATHS with an empty response
         if self.request.path in settings.IGNORE_PATHS:
             self.finish()
             return
 
-        # Parse the call into its separate parts e.g. index / document / call
-        parsed_request = parse_request(self.request)
+        # Parse the uri into its parts e.g. index / document / call
+        parsed_request = self._get_parsed_request()
 
         # Get policies that apply to the current user
-        user_policies = get_policies_for_user(
-            user=None,
-            policies=settings.POLICIES
-        )
+        user_policies = self._get_policies_for_user()
 
         # Refine user_policies by finding the subset of policies
         # that apply just to the resources of the parsed request
-        policies = get_policies_for_resource(
-            cluster=parsed_request['cluster'],
-            indices=parsed_request['indices'],
-            policies=user_policies
+        policies = self._get_policies_for_resource(
+            parsed_request['cluster'],
+            parsed_request['indices'],
+            user_policies
         )
 
         # Can the user do what they are requesting,

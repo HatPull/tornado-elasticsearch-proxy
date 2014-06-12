@@ -8,6 +8,9 @@ script_regex = re.compile("script|script_fields[\"']+\s*:\s*\{")
 
 def parse_request(request):
     """
+        TODO:  Should this function be "parse_request_uri"  ?
+
+
         Parses a tornado http request object
 
         Returns a list of properties that define the request

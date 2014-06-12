@@ -13,8 +13,8 @@ LISTEN_PORT = int(env['ES_PROXY_LISTEN_PORT'])
 PERMISSIONS = {
     # Home is considered the elasticsearch root or "/"
     'home_read': {
-        'calls': ['_home'],
-        'methods': ['GET'],
+        'calls': ['_home', ],
+        'methods': ['GET', ],
         'script': False
     },
     # Global Admin permission, allows all calls and methods
@@ -27,26 +27,32 @@ PERMISSIONS = {
     # but just GET and HEAD methods
     'admin_read': {
         'calls': '*',
-        'methods': ['GET', 'HEAD'],
+        'methods': ['GET', 'HEAD', ],
         'script': False
     },
     # Kibana admin - Kibana needs some permissions to
     # get information about the server and indices
     'kibana_admin': {
         'calls': '_nodes,',
-        'methods': ['GET', 'HEAD'],
+        'methods': ['GET', 'HEAD', ],
         'script': False
     },
-    #The basic calls and methods needed to read or search and index, or indices
+    # The basic calls and methods needed to search an index, or indices
+    'index_search': {
+        'calls': ['_search'],
+        'methods': ['GET', 'POST', ],
+        'script': False
+    },
+    # The basic calls and methods needed to read or query an index, or indices
     'index_read': {
-        'calls': ['_document', '_query', '_search'],
-        'methods': ['GET', 'HEAD'],
+        'calls': ['_document', '_query', ],
+        'methods': ['GET', 'HEAD', ],
         'script': False
     },
-    #The basic calls and methods needed to write to and index, or indices
+    # The basic calls and methods needed to write to and index, or indices
     'index_write': {
-        'calls': ['_document', '_create'],
-        'methods': ['PUT', 'POST'],
+        'calls': ['_document', '_create', ],
+        'methods': ['PUT', 'POST', ],
         'script': False
     },
 }
